@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render
+from django.contrib.auth.decorators import permission_required
 
 # Function-based view
 def list_books(request):
@@ -76,7 +77,7 @@ def add_book(request):
         title = request.POST.get('title')
         author = request.POST.get('author')
         Book.objects.create(title=title, author=author)
-        return redirect('book_list')  # You can change this to your list view
+        return redirect('book_list')  
     return render(request, 'add_book.html')
 
 @permission_required('relationship_app.can_change_book', raise_exception=True)
