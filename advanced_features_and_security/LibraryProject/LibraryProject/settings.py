@@ -40,6 +40,13 @@ SECURE_CONTENT_TYPE_NOSNIFF = True # Prevents MIME-type sniffing
 CSRF_COOKIE_SECURE = True # Ensures CSRF cookie is only sent over HTTPS
 SESSION_COOKIE_SECURE = True # Ensures session cookie is only sent over HTTPS
 
+# Redirect all HTTP traffic to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # Application definition
 
@@ -57,9 +64,6 @@ INSTALLED_APPS = [
 # CSP headers set via django-csp middleware
 MIDDLEWARE = [
     'csp.middleware.CSPMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
