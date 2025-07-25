@@ -23,9 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7f3z#n#^4h(-hz84vg8jms#p5@+_l1jx^roi&m7wk8i7demv70'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-ALLOWED_HOSTS = []
+SECURE_BROWSER_XSS_FILTER = True
+# Clickjacking protection
+X_FRAME_OPTIONS = 'DENY' # Blocks iframe embedding
+
+# X-Content-Type-Options
+SECURE_CONTENT_TYPE_NOSNIFF = True # Prevents MIME-type sniffing
+
+
+# CSRF protection enabled using {% csrf_token %} in all form templates
+
+# Secure cookie settings
+CSRF_COOKIE_SECURE = True # Ensures CSRF cookie is only sent over HTTPS
+SESSION_COOKIE_SECURE = True # Ensures session cookie is only sent over HTTPS
 
 
 # Application definition
@@ -38,9 +51,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
+    'csp',
 ]
 
+# CSP headers set via django-csp middleware
 MIDDLEWARE = [
+    'csp.middleware.CSPMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -122,3 +141,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", "data:")
