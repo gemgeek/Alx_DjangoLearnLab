@@ -13,4 +13,8 @@ class RegisterForm(UserCreationForm):
 class BookForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = '__all__'        
+        fields = '__all__'     
+
+
+class ExampleForm(forms.Form):
+    title = forms.CharField(label='Book Title', max_length=100)

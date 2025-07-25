@@ -4,6 +4,7 @@ from django.http import HttpResponseForbidden
 from .models import Book
 from django.contrib.auth.decorators import login_required, permission_required
 from .forms import BookForm
+from .forms import ExampleForm
 
 
 def index(request):

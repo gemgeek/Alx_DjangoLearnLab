@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Example Form</title>
+    <title>Form Example</title>
 </head>
 <body>
-    <h1>Example Form</h1>
-    <form method="POST">
+    <h1>Submit a Book Title</h1>
+    <form method="post">
         {% csrf_token %}
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" required>
-
+        {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
 </body>
