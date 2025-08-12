@@ -9,6 +9,9 @@ from django.urls import reverse_lazy
 from .models import Post
 from .models import Comment, Post
 from .forms import CommentForm
+from django.db.models import Q
+from taggit.models import Tag
+
 
 def home(request):
     return render(request, 'blog/home.html')
@@ -24,6 +27,23 @@ def register(request):
     else:
         form = SignUpForm()
     return render(request, 'blog/register.html', {'form': form})
+
+def search_posts(request):
+    query = request.GET.get('q')
+    posts = Post.objects.all()
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
+
+# View posts by tag
+def posts_by_tag(request, tag_name):
+    tag = Tag.objects.get(name=tag_name)
+    posts = Post.objects.filter(tags__name__in=[tag_name])
+    return render(request, 'blog/posts_by_tag.html', {'tag': tag, 'posts': posts})
 
 @login_required
 def profile(request):
