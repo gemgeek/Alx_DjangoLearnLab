@@ -1,4 +1,5 @@
 from rest_framework import generics, viewsets, permissions
+from rest_framework.response import Response
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
@@ -24,6 +25,6 @@ class FeedView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # posts from users I follow
-        following_qs = self.request.user.following.all()
-        return Post.objects.filter(author__in=following_qs).order_by('-created_at')        
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')  
