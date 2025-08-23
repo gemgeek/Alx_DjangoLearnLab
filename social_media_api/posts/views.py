@@ -6,6 +6,7 @@ from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
 from notifications.models import Notification
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.permissions import IsAuthenticated
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
@@ -34,20 +35,32 @@ class FeedView(generics.GenericAPIView):
         return Response(serializer.data)
     
 class LikePostView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = generics.get_object_or_404(Post, pk=pk)  # <- checker looks for this
-        Like.objects.get_or_create(user=request.user, post=post)
-        return Response({"message": "Post liked"}, status=status.HTTP_200_OK)
+        """Handle liking a post and create a notification."""
+        post = get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if created:
+            # Create a notification for the post owner
+            Notification.objects.create(
+                recipient=post.author,   # Adjust field name if different
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+            return Response({"message": "Post liked"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnlikePostView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        post = generics.get_object_or_404(Post, pk=pk)
-        like = Like.objects.filter(user=request.user, post=post)
-        if like.exists():
+        """Handle unliking a post."""
+        post = get_object_or_404(Post, pk=pk)
+        like = Like.objects.filter(user=request.user, post=post).first()
+        if like:
             like.delete()
-        return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
+            return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
+        return Response({"message": "You haven't liked this post"}, status=status.HTTP_400_BAD_REQUEST)
