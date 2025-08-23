@@ -5,6 +5,24 @@ from posts.models import Post
 
 User = get_user_model()
 
+class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    email = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'confirm_password']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        validated_data.pop('confirm_password', None)
+        user = get_user_model().objects.create_user(**validated_data, password=password)
+        Token.objects.create(user=user)
+        return user
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField()  # Explicit
     email = serializers.CharField()     # Explicit
