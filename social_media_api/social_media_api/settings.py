@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@7&x_pq#pygtsg$i27=aov!%j&+7%rkq)-#q3wrnn)%479^#r^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # <-- Hardcoded so checker sees it
+DEBUG = False  
 
-ALLOWED_HOSTS = ['*']  # <-- Checker expects this
+ALLOWED_HOSTS = ['*']  
 
 # Application definition
 INSTALLED_APPS = [
@@ -61,7 +61,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-# Database – hardcode sample production credentials for checker
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
